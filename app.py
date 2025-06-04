@@ -44,14 +44,14 @@ def ubicaciones():
     
     # GET: Mostrar todos los sitios
     sitios = collection.find()
-    return render_template('ubicaciones.html', sitios=sitios, sitio=None, sitio_id=None)
+    return render_template('ubicaciones.html', sitios=sitios, sitio=None, sitio_id=None, accordion_open=False)
 
 @app.route('/editar/<sitio_id>')
 def editar_sitio(sitio_id):
     # Obtener el sitio para editar
     sitio = collection.find_one({'_id': ObjectId(sitio_id)})
     sitios = collection.find()
-    return render_template('ubicaciones.html', sitios=sitios, sitio=sitio, sitio_id=sitio_id)
+    return render_template('ubicaciones.html', sitios=sitios, sitio=sitio, sitio_id=sitio_id, accordion_open=True)
 
 @app.route('/eliminar/<sitio_id>', methods=['POST'])
 def eliminar_sitio(sitio_id):
