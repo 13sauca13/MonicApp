@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Ubicaciones{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Gestión de Ubicaciones</h1>
+
+    <!-- Formulario para agregar/editar sitios -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>{{ 'Editar Sitio' if sitio_id else 'Agregar Sitio' }}</h3>
+            <form method="POST" action="{{ url_for('ubicaciones') }}">
+                <input type="hidden" name="sitio_id" value="{{ sitio_id or '' }}">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ sitio.nombre if sitio else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Ubicación</label>
+                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="{{ sitio.ubicacion if sitio else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="capacidad" class="form-label">Capacidad</label>
+                    <input type="number" class="form-control" id="capacidad" name="capacidad" value="{{ sitio.capacidad if sitio else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="servicios" class="form-label">Servicios</label>
+                    <textarea class="form-control" id="servicios" name="servicios">{{ sitio.servicios if sitio else '' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="contacto" class="form-label">Contacto</label>
+                    <input type="text" class="form-control" id="contacto" name="contacto" value="{{ sitio.contacto if sitio else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="notas" class="form-label">Notas</label>
+                    <textarea class="form-control" id="notas" name="notas">{{ sitio.notas if sitio else '' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ 'Actualizar' if sitio_id else 'Agregar' }}</button>
+                {% if sitio_id %}
+                    <a href="{{ url_for('ubicaciones') }}" class="btn btn-secondary">Cancelar</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de ubicaciones -->
+    <h3>Lista de Ubicaciones</h3>
+    <table class="table table-bordered table-light">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Ubicación</th>
+                <th>Capacidad</th>
+                <th>Servicios</th>
+                <th>Contacto</th>
+                <th>Notas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sitio in sitios %}
+                <tr>
+                    <td>{{ sitio.nombre }}</td>
+                    <td>{{ sitio.ubicacion }}</td>
+                    <td>{{ sitio.capacidad }}</td>
+                    <td>{{ sitio.servicios }}</td>
+                    <td>{{ sitio.contacto }}</td>
+                    <td>{{ sitio.notas }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_sitio', sitio_id=sitio._id) }}" class="btn btn-sm btn-warning">Editar</a>
+                        <form action="{{ url_for('eliminar_sitio', sitio_id=sitio._id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este sitio?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">No hay ubicaciones registradas.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
