@@ -1,24 +1,23 @@
-# Usar una imagen base ligera de Python
-FROM python:3.9.21-alpine3.20
+# Usar una imagen base de Python 3.12 slim para mantener la imagen ligera
+FROM python:3.12-slim
 
-# Establecer el directorio de trabajo dentro de /app/nereo
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar solo el archivo de requisitos primero para aprovechar el caché de Docker
-COPY app/requirements.txt .
+# Copiar requirements.txt primero para aprovechar el cacheo de capas
+COPY requirements.txt .
 
 # Instalar dependencias
-RUN apk add --no-cache bash && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto del proyecto
-COPY app/ .
+# Copiar el resto de los archivos del proyecto
+COPY . .
 
-# Exponer el puerto (Render asignará dinámicamente, pero lo especificamos)
-EXPOSE 3000
+# Exponer el puerto que usará Render (por defecto 10000)
+EXPOSE 10000
 
-# Configurar la variable de entorno para Flask
-ENV FLASK_ENV=production
+# Configurar la variable de entorno para el puerto
+ENV PORT=10000
 
-# Comando para ejecutar la aplicación
-CMD ["gunicorn", "--bind", "0.0.0.0:3000", "run:app"]
+# Comando para ejecutar la aplicación con gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
