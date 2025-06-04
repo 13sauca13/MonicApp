@@ -13,11 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el resto de los archivos del proyecto
 COPY . .
 
-# Exponer el puerto que usará Render (por defecto 10000)
-EXPOSE 10000
+# No definimos un puerto estático; Render lo asigna dinámicamente
+# Exponer un puerto genérico para documentación (Render lo ignorará si es dinámico)
+EXPOSE 8080
 
-# Configurar la variable de entorno para el puerto
-ENV PORT=10000
-
-# Comando para ejecutar la aplicación con gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
+# Configurar gunicorn para usar la variable de entorno PORT proporcionada por Render
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT app:app"]
