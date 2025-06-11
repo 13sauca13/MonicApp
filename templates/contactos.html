@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Contactos{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Gestión de Contactos</h1>
+
+    <!-- Acordeón para el formulario de agregar/editar contactos -->
+    <div class="accordion mb-4" id="formAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingForm">
+                <button class="accordion-button {{ '' if accordion_open else 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" aria-expanded="{{ 'true' if accordion_open else 'false' }}" aria-controls="collapseForm">
+                    {{ 'Editar Contacto' if contacto_id else 'Agregar Nuevo Contacto' }}
+                </button>
+            </h2>
+            <div id="collapseForm" class="accordion-collapse collapse {{ 'show' if accordion_open else '' }}" aria-labelledby="headingForm" data-bs-parent="#formAccordion">
+                <div class="accordion-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('contactos') }}">
+                                <input type="hidden" name="contacto_id" value="{{ contacto_id or '' }}">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ contacto.nombre if contacto else '' }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" value="{{ contacto.telefono if contacto else '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="mail" class="form-label">Mail</label>
+                                    <input type="email" class="form-control" id="mail" name="mail" value="{{ contacto.mail if contacto else '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="empresa" class="form-label">Empresa</label>
+                                    <input type="text" class="form-control" id="empresa" name="empresa" value="{{ contacto.empresa if contacto else '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ubicacion" class="form-label">Ubicación</label>
+                                    <select class="form-control" id="ubicacion" name="ubicacion_id" required>
+                                        <option value="">Selecciona una ubicación</option>
+                                        {% for ubicacion in ubicaciones %}
+                                            <option value="{{ ubicacion._id }}" {{ 'selected' if contacto and contacto.ubicacion_id == ubicacion._id else '' }}>{{ ubicacion.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">{{ 'Actualizar' if contacto_id else 'Agregar' }}</button>
+                                {% if contacto_id %}
+                                    <a href="{{ url_for('contactos') }}" class="btn btn-secondary">Cancelar</a>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de contactos -->
+    <h3>Lista de Contactos</h3>
+    <table class="table table-bordered table-light">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Mail</th>
+                <th>Empresa</th>
+                <th>Ubicación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contacto in contactos %}
+                <tr>
+                    <td>{{ contacto.nombre }}</td>
+                    <td>{{ contacto.telefono }}</td>
+                    <td>{{ contacto.mail }}</td>
+                    <td>{{ contacto.empresa }}</td>
+                    <td>
+                        {% if contacto.ubicacion_id %}
+                            <a href="{{ url_for('ubicaciones', ubicacion_id=contacto.ubicacion_id) }}">{{ contacto.ubicacion_nombre }}</a>
+                        {% else %}
+                            Sin ubicación
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('editar_contacto', contacto_id=contacto._id) }}" class="btn btn-sm btn-warning">Editar</a>
+                        <form action="{{ url_for('eliminar_contacto', contacto_id=contacto._id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este contacto?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">No hay contactos registrados.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Script para forzar el despliegue del acordeón si accordion_open es True -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const accordionOpen = {{ 'true' if accordion_open else 'false' }};
+            if (accordionOpen) {
+                const collapseElement = document.getElementById('collapseForm');
+                const accordionButton = document.querySelector('#headingForm .accordion-button');
+                if (collapseElement && accordionButton) {
+                    collapseElement.classList.add('show');
+                    accordionButton.classList.remove('collapsed');
+                    accordionButton.setAttribute('aria-expanded', 'true');
+                }
+            }
+        });
+    </script>
+{% endblock %}

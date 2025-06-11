@@ -24,12 +24,20 @@
                                     <input type="text" class="form-control" id="nombre" name="nombre" value="{{ sitio.nombre if sitio else '' }}" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="ubicacion" class="form-label">Ubicación</label>
+                                    <label for="ubicacion" class="form-label">Ubicación (Dirección)</label>
                                     <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="{{ sitio.ubicacion if sitio else '' }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="capacidad" class="form-label">Capacidad</label>
-                                    <input type="number" class="form-control" id="capacidad" name="capacidad" value="{{ sitio.capacidad if sitio else '' }}" required>
+                                    <input type="number" class="form-control" id="capacidad" name="capacidad" value="{{ sitio.capacidad if sitio else '' }}" required min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="latitud" class="form-label">Latitud</label>
+                                    <input type="number" class="form-control" id="latitud" name="latitud" value="{{ sitio.coordenadas.latitud if sitio and sitio.coordenadas else '' }}" step="any" min="-90" max="90" placeholder="Ej. 40.4168">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="longitud" class="form-label">Longitud</label>
+                                    <input type="number" class="form-control" id="longitud" name="longitud" value="{{ sitio.coordenadas.longitud if sitio and sitio.coordenadas else '' }}" step="any" min="-180" max="180" placeholder="Ej. -3.7038">
                                 </div>
                                 <div class="mb-3">
                                     <label for="servicios" class="form-label">Servicios</label>
@@ -72,7 +80,7 @@
         <tbody>
             {% for sitio in sitios %}
                 <tr>
-                    <td>{{ sitio.nombre }}</td>
+                    <td><a href="{{ url_for('ubicacion_detalle', ubicacion_id=sitio._id) }}">{{ sitio.nombre }}</a></td>
                     <td>{{ sitio.ubicacion }}</td>
                     <td>{{ sitio.capacidad }}</td>
                     <td>{{ sitio.servicios }}</td>

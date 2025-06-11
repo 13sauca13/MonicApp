@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles de Ubicación{% endblock %}
+
+{% block content %}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        #mapa {
+            width: 100%;
+            aspect-ratio: 2 / 1; /* Altura = ancho / 2 */
+            margin-bottom: 20px;
+            max-width: 100%;
+            border: 1px solid #ddd; /* Borde sutil para mejor visibilidad */
+        }
+    </style>
+
+    <h1 class="mb-4">Detalles de la Ubicación</h1>
+
+    <!-- Acordeón para el formulario de edición -->
+    <div class="accordion mb-4" id="formAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingForm">
+                <button class="accordion-button {{ '' if accordion_open else 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" aria-expanded="{{ 'true' if accordion_open else 'false' }}" aria-controls="collapseForm">
+                    Editar Ubicación
+                </button>
+            </h2>
+            <div id="collapseForm" class="accordion-collapse collapse {{ 'show' if accordion_open else '' }}" aria-labelledby="headingForm" data-bs-parent="#formAccordion">
+                <div class="accordion-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('ubicacion_detalle', ubicacion_id=ubicacion._id) }}">
+                                <input type="hidden" name="ubicacion_id" value="{{ ubicacion._id }}">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ ubicacion.nombre }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ubicacion" class="form-label">Ubicación (Dirección)</label>
+                                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="{{ ubicacion.ubicacion }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="capacidad" class="form-label">Capacidad</label>
+                                    <input type="number" class="form-control" id="capacidad" name="capacidad" value="{{ ubicacion.capacidad }}" required min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="latitud" class="form-label">Latitud</label>
+                                    <input type="number" class="form-control" id="latitud" name="latitud" value="{{ ubicacion.coordenadas.latitud if ubicacion.coordenadas else '' }}" step="any" min="-90" max="90" placeholder="Ej. 40.4168">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="longitud" class="form-label">Longitud</label>
+                                    <input type="number" class="form-control" id="longitud" name="longitud" value="{{ ubicacion.coordenadas.longitud if ubicacion.coordenadas else '' }}" step="any" min="-180" max="180" placeholder="Ej. -3.7038">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="servicios" class="form-label">Servicios</label>
+                                    <textarea class="form-control" id="servicios" name="servicios">{{ ubicacion.servicios }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contacto" class="form-label">Contacto</label>
+                                    <input type="text" class="form-control" id="contacto" name="contacto" value="{{ ubicacion.contacto }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notas" class="form-label">Notas</label>
+                                    <textarea class="form-control" id="notas" name="notas">{{ ubicacion.notas }}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                                <a href="{{ url_for('ubicaciones') }}" class="btn btn-secondary">Cancelar</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalles de la ubicación -->
+    <h3>Información de la Ubicación</h3>
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ ubicacion.nombre }}</p>
+            <p><strong>Ubicación (Dirección):</strong> {{ ubicacion.ubicacion }}</p>
+            <p><strong>Capacidad:</strong> {{ ubicacion.capacidad }}</p>
+            <p><strong>Coordenadas:</strong> 
+                {% if ubicacion.coordenadas %}
+                    Latitud: {{ ubicacion.coordenadas.latitud }}, Longitud: {{ ubicacion.coordenadas.longitud }}
+                {% else %}
+                    No especificadas
+                {% endif %}
+            </p>
+            <p><strong>Servicios:</strong> {{ ubicacion.servicios or 'Ninguno' }}</p>
+            <p><strong>Contacto:</strong> {{ ubicacion.contacto or 'Ninguno' }}</p>
+            <p><strong>Notas:</strong> {{ ubicacion.notas or 'Ninguna' }}</p>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <h3>Mapa</h3>
+    <div id="mapa"></div>
+
+    <!-- Leaflet JS y script para inicializar el mapa -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializar el mapa
+            var mapa = L.map('mapa').setView([{% if ubicacion.coordenadas %}{{ ubicacion.coordenadas.latitud }}, {{ ubicacion.coordenadas.longitud }}{% else %}0, 0{% endif %}], 13);
+
+            // Añadir capa de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapa);
+
+            // Añadir marcador si hay coordenadas
+            {% if ubicacion.coordenadas %}
+                L.marker([{{ ubicacion.coordenadas.latitud }}, {{ ubicacion.coordenadas.longitud }}]).addTo(mapa)
+                    .bindPopup('{{ ubicacion.nombre }}')
+                    .openPopup();
+            {% endif %}
+        });
+    </script>
+
+    <!-- Botón para volver a la lista de ubicaciones -->
+    <a href="{{ url_for('ubicaciones') }}" class="btn btn-secondary mt-3">Volver a Ubicaciones</a>
+{% endblock %}
