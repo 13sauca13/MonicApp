@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ contacto.nombre }}{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+    }
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 0.75rem;
+    }
+    .info-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .info-row {
+        display: flex;
+        align-items: baseline;
+        gap: 1.5rem;
+        padding: 13px 20px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .info-row:first-child {
+        border-top: none;
+    }
+    .info-key {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255,255,255,0.4);
+        min-width: 110px;
+        flex-shrink: 0;
+    }
+    .info-val {
+        font-size: 0.95rem;
+        color: #e8eaf0;
+    }
+    .info-val a {
+        color: #7eb3ff;
+        text-decoration: none;
+    }
+    .info-val a:hover {
+        color: #afd0ff;
+        text-decoration: underline;
+    }
+    .info-val .muted {
+        color: rgba(255,255,255,0.35);
+        font-style: italic;
+    }
+    /* Avatar */
+    .contact-avatar-lg {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: rgba(126, 179, 255, 0.15);
+        border: 1px solid rgba(126, 179, 255, 0.25);
+        color: #7eb3ff;
+        font-size: 1.5rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    /* Botones */
+    .btn-glass {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.85);
+        border-radius: 20px;
+        padding: 6px 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+    .btn-glass:hover {
+        background: rgba(255,255,255,0.14);
+        border-color: rgba(255,255,255,0.35);
+        color: #fff;
+    }
+    .btn-glass-amber {
+        background: rgba(180, 120, 30, 0.15);
+        border: 1px solid rgba(180, 120, 30, 0.35);
+        color: #c8a96e;
+        border-radius: 20px;
+        padding: 6px 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+    .btn-glass-amber:hover {
+        background: rgba(180, 120, 30, 0.28);
+        border-color: rgba(180, 120, 30, 0.55);
+        color: #e0c080;
+    }
+</style>
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <span class="contact-avatar-lg">{{ contacto.nombre[0] | upper }}</span>
+    <div>
+        <h1 class="page-title mb-0">{{ contacto.nombre }}</h1>
+        {% if contacto.empresa %}
+        <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 3px;">{{ contacto.empresa }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Info card -->
+<p class="section-label">Información de contacto</p>
+<div class="info-card mb-4">
+    <div class="info-row">
+        <span class="info-key">Teléfono</span>
+        <span class="info-val">
+            {% if contacto.telefono %}
+                <a href="tel:{{ contacto.telefono }}">{{ contacto.telefono }}</a>
+            {% else %}
+                <span class="muted">Sin teléfono</span>
+            {% endif %}
+        </span>
+    </div>
+    <div class="info-row">
+        <span class="info-key">Mail</span>
+        <span class="info-val">
+            {% if contacto.mail %}
+                <a href="mailto:{{ contacto.mail }}">{{ contacto.mail }}</a>
+            {% else %}
+                <span class="muted">Sin mail</span>
+            {% endif %}
+        </span>
+    </div>
+    <div class="info-row">
+        <span class="info-key">Empresa</span>
+        <span class="info-val">
+            {% if contacto.empresa %}{{ contacto.empresa }}{% else %}<span class="muted">Sin empresa</span>{% endif %}
+        </span>
+    </div>
+    <div class="info-row">
+        <span class="info-key">Ubicación</span>
+        <span class="info-val">
+            {% if ubicacion %}
+                <a href="{{ url_for('ubicacion_detalle', ubicacion_id=ubicacion._id) }}">{{ ubicacion.nombre }}</a>
+            {% elif contacto.ubicacion_nombre %}
+                {{ contacto.ubicacion_nombre }}
+            {% else %}
+                <span class="muted">Sin ubicación asignada</span>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="d-flex gap-2">
+    <a href="{{ url_for('editar_contacto', contacto_id=contacto._id) }}" class="btn-glass-amber">Editar</a>
+    <a href="{{ url_for('contactos') }}" class="btn-glass">Volver a Contactos</a>
+</div>
+
+{% endblock %}

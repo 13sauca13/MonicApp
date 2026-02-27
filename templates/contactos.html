@@ -3,7 +3,186 @@
 {% block title %}Contactos{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Gestión de Contactos</h1>
+<style>
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+    }
+    /* Acordeón moderno */
+    .accordion-item {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+    .accordion-button {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 12px !important;
+    }
+    .accordion-button:not(.collapsed) {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        box-shadow: none;
+    }
+    .accordion-button::after {
+        filter: invert(1);
+    }
+    .accordion-body {
+        background: transparent;
+    }
+    .form-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    .form-label {
+        color: rgba(255,255,255,0.85);
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .form-control, .form-select {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        border-radius: 8px;
+    }
+    .form-control:focus, .form-select:focus {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.4);
+        color: #fff;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+    }
+    .form-control::placeholder {
+        color: rgba(255,255,255,0.3);
+    }
+    .form-select option {
+        background: #1e2535;
+        color: #fff;
+    }
+    /* Tabla moderna */
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 0.75rem;
+    }
+    .tabla-wrap {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .tabla-moderna {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    .tabla-moderna thead th {
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.75);
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 13px 18px;
+        border: none;
+        white-space: nowrap;
+    }
+    .tabla-moderna tbody tr {
+        border-top: 1px solid rgba(255,255,255,0.08);
+        transition: background 0.15s ease;
+    }
+    .tabla-moderna tbody tr:hover {
+        background: rgba(255,255,255,0.08);
+    }
+    .tabla-moderna td {
+        color: #e8eaf0;
+        padding: 14px 18px;
+        border: none;
+        font-size: 0.93rem;
+        vertical-align: middle;
+    }
+    .tabla-moderna td a {
+        color: #7eb3ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .tabla-moderna td a:hover {
+        color: #afd0ff;
+        text-decoration: underline;
+    }
+    .tabla-moderna .text-muted-cell {
+        color: rgba(255,255,255,0.45);
+        font-style: italic;
+    }
+    .tabla-moderna .empty-row td {
+        color: rgba(255,255,255,0.45);
+        text-align: center;
+        padding: 40px 16px;
+        font-size: 0.93rem;
+    }
+    /* Avatar inicial del contacto */
+    .contact-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(126, 179, 255, 0.2);
+        color: #7eb3ff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+    .contact-name-cell {
+        display: flex;
+        align-items: center;
+    }
+    /* Botones de acción */
+    .btn-accion-edit {
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+    .btn-accion-edit:hover {
+        background: rgba(255, 193, 7, 0.3);
+        color: #ffc107;
+    }
+    .btn-accion-del {
+        background: rgba(220, 53, 69, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .btn-accion-del:hover {
+        background: rgba(220, 53, 69, 0.3);
+        color: #f87171;
+    }
+</style>
+
+    <h1 class="page-title mb-4">Gestión de Contactos</h1>
 
     <!-- Acordeón para el formulario de agregar/editar contactos -->
     <div class="accordion mb-4" id="formAccordion">
@@ -15,27 +194,28 @@
             </h2>
             <div id="collapseForm" class="accordion-collapse collapse {{ 'show' if accordion_open else '' }}" aria-labelledby="headingForm" data-bs-parent="#formAccordion">
                 <div class="accordion-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <form method="POST" action="{{ url_for('contactos') }}">
-                                <input type="hidden" name="contacto_id" value="{{ contacto_id or '' }}">
-                                <div class="mb-3">
+                    <div class="form-card">
+                        <form method="POST" action="{{ url_for('contactos') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="contacto_id" value="{{ contacto_id or '' }}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
                                     <label for="nombre" class="form-label">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" value="{{ contacto.nombre if contacto else '' }}" required>
                                 </div>
-                                <div class="mb-3">
+                                <div class="col-md-3">
                                     <label for="telefono" class="form-label">Teléfono</label>
                                     <input type="tel" class="form-control" id="telefono" name="telefono" value="{{ contacto.telefono if contacto else '' }}">
                                 </div>
-                                <div class="mb-3">
+                                <div class="col-md-3">
                                     <label for="mail" class="form-label">Mail</label>
                                     <input type="email" class="form-control" id="mail" name="mail" value="{{ contacto.mail if contacto else '' }}">
                                 </div>
-                                <div class="mb-3">
+                                <div class="col-md-6">
                                     <label for="empresa" class="form-label">Empresa</label>
                                     <input type="text" class="form-control" id="empresa" name="empresa" value="{{ contacto.empresa if contacto else '' }}">
                                 </div>
-                                <div class="mb-3">
+                                <div class="col-md-6">
                                     <label for="ubicacion" class="form-label">Ubicación</label>
                                     <select class="form-control" id="ubicacion" name="ubicacion_id" required>
                                         <option value="">Selecciona una ubicación</option>
@@ -44,12 +224,14 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary">{{ 'Actualizar' if contacto_id else 'Agregar' }}</button>
+                            </div>
+                            <div class="mt-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm px-4">{{ 'Actualizar' if contacto_id else 'Agregar' }}</button>
                                 {% if contacto_id %}
-                                    <a href="{{ url_for('contactos') }}" class="btn btn-secondary">Cancelar</a>
+                                    <a href="{{ url_for('contactos') }}" class="btn btn-secondary btn-sm px-4">Cancelar</a>
                                 {% endif %}
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -57,48 +239,55 @@
     </div>
 
     <!-- Tabla de contactos -->
-    <h3>Lista de Contactos</h3>
-    <table class="table table-bordered table-light">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Mail</th>
-                <th>Empresa</th>
-                <th>Ubicación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for contacto in contactos %}
+    <p class="section-title">Lista de Contactos</p>
+    <div class="tabla-wrap">
+        <table class="tabla-moderna">
+            <thead>
                 <tr>
-                    <td>{{ contacto.nombre }}</td>
-                    <td>{{ contacto.telefono }}</td>
-                    <td>{{ contacto.mail }}</td>
-                    <td>{{ contacto.empresa }}</td>
-                    <td>
-                        {% if contacto.ubicacion_id %}
-                            <a href="{{ url_for('ubicaciones', ubicacion_id=contacto.ubicacion_id) }}">{{ contacto.ubicacion_nombre }}</a>
-                        {% else %}
-                            Sin ubicación
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ url_for('editar_contacto', contacto_id=contacto._id) }}" class="btn btn-sm btn-warning">Editar</a>
-                        <form action="{{ url_for('eliminar_contacto', contacto_id=contacto._id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este contacto?')">Eliminar</button>
-                        </form>
-                    </td>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Mail</th>
+                    <th>Empresa</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
                 </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6">No hay contactos registrados.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for contacto in contactos %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('contacto_detalle', contacto_id=contacto._id) }}" class="contact-name-cell" style="text-decoration:none; color:inherit;">
+                                <span class="contact-avatar">{{ contacto.nombre[0] | upper }}</span>
+                                {{ contacto.nombre }}
+                            </a>
+                        </td>
+                        <td>{{ contacto.telefono or '<span class="text-muted-cell">—</span>' | safe }}</td>
+                        <td>{{ contacto.mail or '<span class="text-muted-cell">—</span>' | safe }}</td>
+                        <td>{{ contacto.empresa or '<span class="text-muted-cell">—</span>' | safe }}</td>
+                        <td>
+                            {% if contacto.ubicacion_id %}
+                                <a href="{{ url_for('ubicaciones', ubicacion_id=contacto.ubicacion_id) }}">{{ contacto.ubicacion_nombre }}</a>
+                            {% else %}
+                                <span class="text-muted-cell">Sin ubicación</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('editar_contacto', contacto_id=contacto._id) }}" class="btn-accion-edit me-1">Editar</a>
+                            <form action="{{ url_for('eliminar_contacto', contacto_id=contacto._id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn-accion-del" onclick="return confirm('¿Estás seguro de eliminar este contacto?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr class="empty-row">
+                        <td colspan="6">No hay contactos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Script para forzar el despliegue del acordeón si accordion_open es True -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const accordionOpen = {{ 'true' if accordion_open else 'false' }};

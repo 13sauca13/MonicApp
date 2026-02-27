@@ -3,21 +3,254 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-        <div class="d-flex flex-row gap-3">
-            <a href="{{ url_for('ubicaciones') }}" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+<style>
+    .menu-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        backdrop-filter: blur(6px);
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .menu-card:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #fff;
+        transform: translateY(-4px);
+    }
+    .menu-card svg {
+        opacity: 0.85;
+    }
+    /* Search */
+    .search-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+    }
+    .search-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 1rem;
+    }
+    .form-label {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .form-control {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 8px;
+    }
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.11);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.07);
+    }
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.25);
+    }
+    .btn-buscar {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 20px;
+        padding: 6px 24px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        transition: all 0.15s;
+    }
+    .btn-buscar:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.45);
+        color: #fff;
+    }
+    /* Results */
+    .section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 0.75rem;
+    }
+    .result-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        text-decoration: none;
+        transition: background 0.15s, border-color 0.15s, transform 0.15s;
+        color: inherit;
+    }
+    .result-card:hover {
+        background: rgba(255, 255, 255, 0.09);
+        border-color: rgba(255, 255, 255, 0.22);
+        transform: translateX(3px);
+        color: inherit;
+    }
+    .result-nombre {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #fff;
+    }
+    .result-meta {
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 2px;
+    }
+    .result-badge {
+        display: inline-block;
+        background: rgba(180, 120, 30, 0.2);
+        border: 1px solid rgba(180, 120, 30, 0.35);
+        color: #c8a96e;
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .empty-msg {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.9rem;
+        font-style: italic;
+        padding: 1rem 0;
+    }
+</style>
+
+    <!-- Menu cards -->
+    <div class="d-flex justify-content-center align-items-center" style="padding: 2.5rem 0 2rem;">
+        <div class="d-flex flex-row gap-4">
+            <a href="{{ url_for('ubicaciones') }}" class="menu-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
                     <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                 </svg>
                 Ubicaciones
             </a>
-            <a href="{{ url_for('contactos') }}" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-lines-fill me-2" viewBox="0 0 16 16">
+            <a href="{{ url_for('contactos') }}" class="menu-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 2s-1 0-1 1v4h12v-4c0-1-1-1-1-1H1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1h-4zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2z"/>
                 </svg>
                 Contactos
             </a>
         </div>
     </div>
+
+    <!-- Search form -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="search-card">
+                <p class="search-title">Buscar ubicaciones y contactos</p>
+                <form method="GET" action="{{ url_for('buscar') }}">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="q" class="form-label">Servicios o nombre</label>
+                            <input type="text" class="form-control" id="q" name="q" placeholder="Ej: parking, catering, jardín…" value="{{ q }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="capacidad_min" class="form-label">Capacidad mínima</label>
+                            <input type="number" class="form-control" id="capacidad_min" name="capacidad_min" placeholder="Personas" min="0" value="{{ capacidad_min }}">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn-buscar w-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1" style="vertical-align: -1px;">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    {% if busqueda %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Ubicaciones -->
+            <p class="section-title">
+                Ubicaciones
+                <span style="color: rgba(255,255,255,0.3); font-weight:400;">&nbsp;{{ ubicaciones_result | length }} resultado{{ 's' if ubicaciones_result | length != 1 else '' }}</span>
+            </p>
+            {% if ubicaciones_result %}
+                <div class="d-flex flex-column gap-2 mb-4">
+                    {% for u in ubicaciones_result %}
+                    <a href="{{ url_for('ubicacion_detalle', ubicacion_id=u._id) }}" class="result-card">
+                        <div>
+                            <div class="result-nombre">{{ u.nombre }}</div>
+                            <div class="result-meta">
+                                {% if u.ubicacion %}{{ u.ubicacion }}{% endif %}
+                                {% if u.servicios %} &middot; {{ u.servicios }}{% endif %}
+                            </div>
+                        </div>
+                        {% if u.capacidad %}
+                        <span class="result-badge ms-3 flex-shrink-0">{{ u.capacidad }} personas</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-msg mb-4">No se encontraron ubicaciones.</p>
+            {% endif %}
+
+            <!-- Contactos (only when text query was given) -->
+            {% if q %}
+            <p class="section-title">
+                Contactos
+                <span style="color: rgba(255,255,255,0.3); font-weight:400;">&nbsp;{{ contactos_result | length }} resultado{{ 's' if contactos_result | length != 1 else '' }}</span>
+            </p>
+            {% if contactos_result %}
+                <div class="d-flex flex-column gap-2 mb-4">
+                    {% for c in contactos_result %}
+                    <a href="{{ url_for('contacto_detalle', contacto_id=c._id) }}" class="result-card">
+                        <div>
+                            <div class="result-nombre">{{ c.nombre }}</div>
+                            <div class="result-meta">
+                                {% if c.empresa %}{{ c.empresa }}{% endif %}
+                                {% if c.telefono %} &middot; {{ c.telefono }}{% endif %}
+                                {% if c.ubicacion_nombre %} &middot; {{ c.ubicacion_nombre }}{% endif %}
+                            </div>
+                        </div>
+                        {% if c.mail %}
+                        <span class="result-badge ms-3 flex-shrink-0">{{ c.mail }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-msg mb-4">No se encontraron contactos.</p>
+            {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+    {% endif %}
+
 {% endblock %}
